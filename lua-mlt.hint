@@ -1,0 +1,10 @@
+category: Audio Video Lua
+requires: libmlt2 libmlt++3 lua
+external-source: mlt
+sdesc: "Multimedia framework for broadcasting (Lua bindings)"
+ldesc: "MLT is an open source multimedia framework, designed and 
+developed for television broadcasting. It provides a toolkit for 
+broadcasters, video editors, media players, transcoders, web streamers 
+and many more types of applications. The functionality of the system is 
+provided via an assortment of ready to use tools, XML authoring 
+components, and an extensible plug-in based API."

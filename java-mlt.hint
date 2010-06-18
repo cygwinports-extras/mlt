@@ -1,0 +1,10 @@
+category: Audio Video Java
+requires: libgcc1 libmlt2 libmlt++3 libstdc++6
+external-source: mlt
+sdesc: "Multimedia framework for broadcasting (Java bindings)"
+ldesc: "MLT is an open source multimedia framework, designed and 
+developed for television broadcasting. It provides a toolkit for 
+broadcasters, video editors, media players, transcoders, web streamers 
+and many more types of applications. The functionality of the system is 
+provided via an assortment of ready to use tools, XML authoring 
+components, and an extensible plug-in based API."
