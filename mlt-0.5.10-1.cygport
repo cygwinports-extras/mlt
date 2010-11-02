@@ -1,4 +1,4 @@
-inherit java lua perl php python ruby tcl qt4 # mono
+inherit java lua mono perl php python ruby tcl qt4
 
 DESCRIPTION="Multimedia framework designed for broadcasting"
 HOMEPAGE="http://www.mltframework.org/"
@@ -7,24 +7,25 @@ SRC_URI="mirror://sourceforge/mlt/${P}.tar.gz"
 PATCH_URI="
 	0.5.4-mmx-cygwin.patch
 	0.5.4-targetos-cygwin.patch
-	0.5.4-swig-build-cygwin.patch
+	0.5.10-swig-cygwin.patch
 "
 
 # if/when API changes: versionize /usr/{lib,share}/mlt in framework/mlt_factory.c
 PKG_NAMES="${PN} libmlt2 libmlt-devel libmlt++3 libmlt++-devel"
-PKG_NAMES+=" java-mlt lua-mlt perl-mlt php-mlt python-mlt ruby-mlt tcl-mlt"
+PKG_NAMES+=" java-mlt lua-mlt mono-mlt-sharp perl-mlt php-mlt python-mlt ruby-mlt tcl-mlt"
 mlt_CONTENTS="usr/bin/melt.exe usr/share/doc/"
 libmlt2_CONTENTS="usr/bin/cygmlt-2.dll usr/lib/mlt/ usr/share/mlt/"
 libmlt_devel_CONTENTS="usr/include/mlt/ usr/lib/libmlt.* usr/lib/pkgconfig/mlt-framework.pc"
 libmlt__3_CONTENTS="usr/bin/cygmlt++-3.dll"
 libmlt___devel_CONTENTS="usr/include/mlt++/ usr/lib/libmlt++.* usr/lib/pkgconfig/mlt++.pc"
 java_mlt_CONTENTS="usr/bin/*java.dll ${JAVA_DIR#/} ${JAVADOC_DIR#/}"
+mono_mlt_sharp_CONTENTS="usr/bin/*sharp.dll usr/lib/mono/"
 lua_mlt_CONTENTS=${LUA_LIBDIR#/}
 perl_mlt_CONTENTS=${PERL_VENDORARCH#/}
 php_mlt_CONTENTS="${PHP_INI_DIR#/} ${PHP_EXTENSION_DIR#/} ${PHP_PEAR_DIR#/}"
 python_mlt_CONTENTS=${PYTHON_SITELIB#/}
 ruby_mlt_CONTENTS=${RUBY_SITELIB#/}
-tcl_mlt_CONTENTS=${TCL_LIBDIR#/}
+tcl_mlt_CONTENTS="usr/lib/mlt0.0/"
 
 src_compile() {
 	lndirs
@@ -46,6 +47,12 @@ src_install() {
 	cyginstall
 
 	cd ${B}/src/swig
+
+	pushd csharp
+	dobin cygmltsharp.dll
+	insinto /usr/lib/mono/mlt-sharp
+	doins mlt-sharp.dll
+	popd
 
 	pushd java
 	dobin *.dll
@@ -81,7 +88,7 @@ src_install() {
 	popd
 
 	pushd tcl
-	exeinto ${TCL_LIBDIR}/mlt
+	exeinto /usr/lib/mlt0.0
 	doexe *.dll pkgIndex.tcl
 	popd
 }

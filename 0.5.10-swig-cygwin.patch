@@ -1,0 +1,139 @@
+--- origsrc/mlt-0.5.10/src/swig/csharp/build	2010-09-14 01:00:09.000000000 -0500
++++ src/mlt-0.5.10/src/swig/csharp/build	2010-11-02 06:46:19.170296600 -0500
+@@ -14,13 +14,13 @@ then
+ 
+ 	# Invoke swig
+ 	mkdir src_swig
+-	swig -c++ -I../../mlt++ -I../.. -csharp -dllimport libmltsharp -outdir src_swig -namespace Mlt mlt.i || exit $?
++	swig -c++ -I../../mlt++ -I../.. -csharp -dllimport mltsharp -outdir src_swig -namespace Mlt mlt.i || exit $?
+ 
+ 	# Compile the wrapper
+ 	g++ -fPIC -D_GNU_SOURCE -c -rdynamic -pthread -I../.. mlt_wrap.cxx || exit $?
+ 	
+ 	# Create the module
+-	g++ -shared mlt_wrap.o -L../../mlt++ -lmlt++ -o libmltsharp.so || exit $?
++	g++ -shared mlt_wrap.o -L../../mlt++ -lmlt++ -L../../framework -lmlt -o cygmltsharp.dll || exit $?
+ 
+ 	# Compile the library assembly
+ 	mcs -out:mlt-sharp.dll -target:library src_swig/*.cs
+--- origsrc/mlt-0.5.10/src/swig/java/build	2010-09-14 01:00:09.000000000 -0500
++++ src/mlt-0.5.10/src/swig/java/build	2010-11-02 06:58:46.391061100 -0500
+@@ -27,13 +27,13 @@ then
+ 	g++ -fPIC -D_GNU_SOURCE -c -rdynamic -pthread -I../.. mlt_wrap.cxx $JAVA_INCLUDE || exit $?
+ 	
+ 	# Create the module
+-	g++ -shared mlt_wrap.o -L../../mlt++ -lmlt++ -o libmlt_java.so || exit $?
++	g++ -shared mlt_wrap.o -L../../mlt++ -lmlt++ -L../../framework -lmlt -o cygmlt_java.dll || exit $?
+ 
+ 	# Compile the test
+ 	javac `find src_swig -name '*.java'` || exit $?
+ 
+ 	export CLASSPATH=`pwd`/src_swig
+-	javac Play.java
++	javac -classpath $CLASSPATH Play.java
+ else
+ 	echo "Java command not found"
+ 	exit 1
+--- origsrc/mlt-0.5.10/src/swig/lua/build	2010-09-14 01:00:09.000000000 -0500
++++ src/mlt-0.5.10/src/swig/lua/build	2010-11-02 06:47:11.695588200 -0500
+@@ -19,7 +19,7 @@ then
+ 	g++ -fPIC -DPIC -D_GNU_SOURCE -c -rdynamic -pthread -I../.. mlt_wrap.cxx || exit $?
+ 
+ 	# Create the module
+-	g++ -shared mlt_wrap.o -L../../mlt++ -lmlt++ -o mlt.so || exit $?
++	g++ -shared mlt_wrap.o -L../../mlt++ -lmlt++ -L../../framework -lmlt -llua -o mlt.dll || exit $?
+ else
+ 	echo Lua not installed.
+ 	exit 1
+--- origsrc/mlt-0.5.10/src/swig/perl/Makefile.PL	2010-09-14 01:00:09.000000000 -0500
++++ src/mlt-0.5.10/src/swig/perl/Makefile.PL	2010-11-02 07:07:40.115399200 -0500
+@@ -9,7 +9,7 @@ WriteMakefile(
+ 	'NAME'    => 'mlt',
+ 	'CC'      => '${CXX} -fPIC -I../..',
+ 	'OPTIMIZE' => '-O2 -g -pipe -Wp,-D_FORTIFY_SOURCE=2 -fexceptions',
+-	'LIBS'    => ['-L../../mlt++ -lmlt++'],
++	'LIBS'    => ['-L../../mlt++ -lmlt++ -L../../framework -lmlt'],
+ 	'OBJECT'  => 'mlt_wrap.o',
+ 	'DESTDIR' => $ENV{'DESTDIR'},
+ );
+--- origsrc/mlt-0.5.10/src/swig/php/build	2010-09-14 01:00:09.000000000 -0500
++++ src/mlt-0.5.10/src/swig/php/build	2010-11-02 06:47:38.075234200 -0500
+@@ -10,4 +10,4 @@ fi
+ ln -sf ../mlt.i
+ swig -c++ -I../../mlt++ -I../.. -php5 -noproxy mlt.i
+ g++ -fPIC -DPIC -D_GNU_SOURCE -c -rdynamic -pthread -I../.. `php-config --includes` mlt_wrap.cpp
+-g++ -shared mlt_wrap.o -L../../mlt++ -lmlt++ -o mlt.so || exit $?
++g++ -shared mlt_wrap.o -L../../mlt++ -lmlt++ -L../../framework -lmlt -lphp5lib -o mlt.dll || exit $?
+--- origsrc/mlt-0.5.10/src/swig/php/play.php	2010-09-14 01:00:09.000000000 -0500
++++ src/mlt-0.5.10/src/swig/php/play.php	2010-11-02 07:44:29.033317400 -0500
+@@ -1,6 +1,6 @@
+ <?php
+ $filename = $argv[1];
+-dl("mlt.so");
++dl("mlt." . PHP_SHLIB_SUFFIX);
+ mlt_factory_init(NULL);
+ $profile = new_profile("dv_ntsc");
+ $p = new_producer( $profile, $filename );
+--- origsrc/mlt-0.5.10/src/swig/python/build	2010-09-14 01:00:09.000000000 -0500
++++ src/mlt-0.5.10/src/swig/python/build	2010-11-02 06:49:18.867009900 -0500
+@@ -11,9 +11,10 @@ path=`which python 2> /dev/null`
+ if [ $? = 0 ]
+ then
+ 	# Change this as needed
+-	export PYTHON_INCLUDE=`python -c "import sys;print \"%s/include/python%d.%d\"%(sys.prefix,sys.version_info[0],sys.version_info[1])"`
++	export PYTHON_CFLAGS=`python-config --cflags`
++	export PYTHON_LIBS=`python-config --libs`
+ 
+-	[ ! -d "$PYTHON_INCLUDE" ] && echo python development missing && exit 1
++	[ ! -n "$PYTHON_CFLAGS" ] && echo python development missing && exit 1
+ 
+ 	ln -sf ../mlt.i
+ 
+@@ -21,10 +22,10 @@ then
+ 	swig -c++ -I../../mlt++ -I../.. -python mlt.i || exit $?
+ 
+ 	# Compile the wrapper
+-	g++ -fPIC -D_GNU_SOURCE -c -rdynamic -pthread -I../.. -I$PYTHON_INCLUDE mlt_wrap.cxx || exit $?
++	g++ -fPIC -D_GNU_SOURCE -c -rdynamic -pthread -I../.. $PYTHON_CFLAGS mlt_wrap.cxx || exit $?
+ 
+ 	# Create the module
+-	g++ -shared mlt_wrap.o -L../../mlt++ -lmlt++ -o _mlt.so || exit $?
++	g++ -shared mlt_wrap.o -L../../mlt++ -lmlt++ -L../../framework -lmlt $PYTHON_LIBS -o _mlt.dll || exit $?
+ else
+ 	echo Python not installed.
+ 	exit 1
+--- origsrc/mlt-0.5.10/src/swig/ruby/build	2010-09-14 01:00:09.000000000 -0500
++++ src/mlt-0.5.10/src/swig/ruby/build	2010-11-02 06:49:32.267433300 -0500
+@@ -7,6 +7,6 @@ end
+ system( "ln -sf ../mlt.i" )
+ system( "swig -c++ -ruby -I../../mlt++ -I../.. mlt.i" )
+ $CFLAGS += " -I../.."
+-$LDFLAGS += " -L../../mlt++ -lmlt++"
++$LDFLAGS += " -L../../mlt++ -lmlt++ -L../../framework -lmlt -lstdc++"
+ create_makefile('mlt')
+ system( "make" )
+--- origsrc/mlt-0.5.10/src/swig/tcl/build	2010-09-14 01:00:09.000000000 -0500
++++ src/mlt-0.5.10/src/swig/tcl/build	2010-11-02 07:37:17.375087300 -0500
+@@ -16,10 +16,10 @@ then
+ 	swig -c++ -I../../mlt++ -I../.. -tcl mlt.i || exit 1
+ 
+ 	# Compile the wrapper
+-	g++ -fPIC -D_GNU_SOURCE -c -rdynamic -pthread -I../.. mlt_wrap.cxx || exit 1
++	g++ -fPIC -DUSE_TCL_STUBS -D_GNU_SOURCE -c -rdynamic -pthread -I../.. mlt_wrap.cxx || exit 1
+ 
+ 	# Create the module
+-	g++ -shared mlt_wrap.o -L../../mlt++ -lmlt++ -o mlt.so || exit 1
++	g++ -shared mlt_wrap.o -L../../mlt++ -lmlt++ -L../../framework -lmlt -ltclstub -o mlt.dll || exit 1
+ else
+ 	echo "Unable to locate tclsh."
+ 	exit 1
+--- origsrc/mlt-0.5.10/src/swig/tcl/play.tcl	2010-09-14 01:00:09.000000000 -0500
++++ src/mlt-0.5.10/src/swig/tcl/play.tcl	2010-11-02 07:38:31.642544300 -0500
+@@ -1,6 +1,6 @@
+ #!/usr/bin/env tclsh
+ 
+-load mlt.so
++load mlt
+ Factory_init
+ set profile [Profile]
+ set arg1 [lindex $argv 0]
