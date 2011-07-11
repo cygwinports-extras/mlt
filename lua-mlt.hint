@@ -1,5 +1,5 @@
 category: Audio Video Lua
-requires: libmlt2 libmlt++3 lua
+requires: libmlt4 libmlt++3 lua
 external-source: mlt
 sdesc: "Multimedia framework for broadcasting (Lua bindings)"
 ldesc: "MLT is an open source multimedia framework, designed and 

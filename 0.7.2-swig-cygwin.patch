@@ -63,7 +63,7 @@
  swig -c++ -I../../mlt++ -I../.. -php5 -noproxy mlt.i
  g++ -fPIC -DPIC -D_GNU_SOURCE -c -rdynamic -pthread -I../.. `php-config --includes` mlt_wrap.cpp
 -g++ -shared mlt_wrap.o -L../../mlt++ -lmlt++ -o mlt.so || exit $?
-+g++ -shared mlt_wrap.o -L../../mlt++ -lmlt++ -L../../framework -lmlt -lphp5lib -o mlt.dll || exit $?
++g++ -shared mlt_wrap.o -L../../mlt++ -lmlt++ -L../../framework -lmlt -lphp5 -o mlt.dll || exit $?
 --- origsrc/mlt-0.5.10/src/swig/php/play.php	2010-09-14 01:00:09.000000000 -0500
 +++ src/mlt-0.5.10/src/swig/php/play.php	2010-11-02 07:44:29.033317400 -0500
 @@ -1,6 +1,6 @@
@@ -74,31 +74,14 @@
  mlt_factory_init(NULL);
  $profile = new_profile("dv_ntsc");
  $p = new_producer( $profile, $filename );
---- origsrc/mlt-0.5.10/src/swig/python/build	2010-09-14 01:00:09.000000000 -0500
-+++ src/mlt-0.5.10/src/swig/python/build	2010-11-02 06:49:18.867009900 -0500
-@@ -11,9 +11,10 @@ path=`which python 2> /dev/null`
- if [ $? = 0 ]
- then
- 	# Change this as needed
--	export PYTHON_INCLUDE=`python -c "import sys;print \"%s/include/python%d.%d\"%(sys.prefix,sys.version_info[0],sys.version_info[1])"`
-+	export PYTHON_CFLAGS=`python-config --cflags`
-+	export PYTHON_LIBS=`python-config --libs`
- 
--	[ ! -d "$PYTHON_INCLUDE" ] && echo python development missing && exit 1
-+	[ ! -n "$PYTHON_CFLAGS" ] && echo python development missing && exit 1
- 
- 	ln -sf ../mlt.i
- 
-@@ -21,10 +22,10 @@ then
- 	swig -c++ -I../../mlt++ -I../.. -python mlt.i || exit $?
- 
- 	# Compile the wrapper
--	g++ -fPIC -D_GNU_SOURCE -c -rdynamic -pthread -I../.. -I$PYTHON_INCLUDE mlt_wrap.cxx || exit $?
-+	g++ -fPIC -D_GNU_SOURCE -c -rdynamic -pthread -I../.. $PYTHON_CFLAGS mlt_wrap.cxx || exit $?
+--- origsrc/mlt-0.7.2/src/swig/python/build
++++ src/mlt-0.7.2/src/swig/python/build
+@@ -24,7 +24,7 @@ then
+ 	g++ -fPIC -D_GNU_SOURCE -c -rdynamic -pthread -I../.. -I$PYTHON_INCLUDE mlt_wrap.cxx || exit $?
  
  	# Create the module
--	g++ -shared mlt_wrap.o -L../../mlt++ -lmlt++ -o _mlt.so || exit $?
-+	g++ -shared mlt_wrap.o -L../../mlt++ -lmlt++ -L../../framework -lmlt $PYTHON_LIBS -o _mlt.dll || exit $?
+-	g++ -shared mlt_wrap.o -L../../mlt++ -lmlt++ -L../../framework -lmlt $(python-config --libs) -o _mlt.so || exit $?
++	g++ -shared mlt_wrap.o -L../../mlt++ -lmlt++ -L../../framework -lmlt $(python-config --libs) -o _mlt.dll || exit $?
  else
  	echo Python not installed.
  	exit 1

@@ -1,5 +1,5 @@
 category: Audio Video
-requires: libgcc1 libmlt2
+requires: libgcc1 libmlt4
 sdesc: "Multimedia framework for broadcasting (tools)"
 ldesc: "MLT is an open source multimedia framework, designed and 
 developed for television broadcasting. It provides a toolkit for 

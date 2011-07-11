@@ -1,5 +1,5 @@
 category: Audio Video
-requires: libmlt2
+requires: libmlt4
 external-source: mlt
 sdesc: "Multimedia framework for broadcasting (C development)"
 ldesc: "MLT is an open source multimedia framework, designed and 

@@ -1,5 +1,5 @@
 category: Audio Video
-requires: libgcc1 libmlt2 libstdc++6
+requires: libgcc1 libmlt4 libstdc++6
 external-source: mlt
 sdesc: "Multimedia framework for broadcasting (C++ runtime)"
 ldesc: "MLT is an open source multimedia framework, designed and 

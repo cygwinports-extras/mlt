@@ -1,0 +1,126 @@
+--- origsrc/mlt-0.7.2/configure	2011-05-02 00:59:12.000000000 -0500
++++ src/mlt-0.7.2/configure	2011-07-05 01:12:34.032464600 -0500
+@@ -119,6 +119,12 @@ build_config()
+ 		echo "RDYNAMIC="
+ 		echo "LDFLAGS+=-Wl,--no-undefined -Wl,--as-needed"
+ 		;;		
++		Cygwin)
++		[ "$(uname -m)" = "x86_64" ] && echo "ARCH_X86_64=1" && echo "CFLAGS+=-DARCH_X86_64"
++		[ "$optimisations" = "true" ] &&
++			echo "OPTIMISATIONS+=-ffast-math"
++		echo "SHFLAGS=-shared"
++		;;
+ 		*)
+ 		;;
+ 		esac
+@@ -201,6 +207,10 @@ case $targetos in
+ 	targetos="MinGW"
+ 	LIBSUF=".dll"
+ 	;;
++	CYGWIN_NT-*)
++	targetos="Cygwin"
++	LIBSUF=".dll"
++	;;
+ 	*)
+ 	LIBSUF=".so"
+ 	;;
+--- origsrc/mlt-0.7.2/src/framework/Makefile	2011-05-02 00:59:12.000000000 -0500
++++ src/mlt-0.7.2/src/framework/Makefile	2011-07-05 01:17:15.051354500 -0500
+@@ -12,6 +12,10 @@ else ifeq ($(targetos), MinGW)
+ NAME = libmlt$(LIBSUF)
+ TARGET = libmlt-$(soversion)$(LIBSUF)
+ SHFLAGS += -Wl,--output-def,libmlt.def
++else ifeq ($(targetos), Cygwin)
++NAME = cygmlt$(LIBSUF)
++TARGET = cygmlt-$(soversion)$(LIBSUF)
++SHFLAGS += -Wl,--out-implib,libmlt.dll.a
+ else
+ NAME = libmlt$(LIBSUF)
+ TARGET = $(NAME).$(version)
+@@ -82,7 +86,7 @@ all:	$(TARGET)
+ $(TARGET): $(OBJS)
+ 		$(CC) $(SHFLAGS) -o $@ $(OBJS) $(LDFLAGS)
+ 		ln -sf $(TARGET) $(NAME)
+-		if [ "$(targetos)" != "MinGW" ]; then \
++		if [ "$(targetos)" != "MinGW" -a "$(targetos)" != "Cygwin" ]; then \
+ 			ln -sf $(TARGET) $(SONAME) ; \
+ 		fi
+ 
+@@ -101,6 +105,10 @@ install:
+ 		install -m 755 $(TARGET) $(DESTDIR)$(prefix) ; \
+ 		install -m 755 $(TARGET) $(DESTDIR)$(libdir)/libmlt.dll ; \
+ 		install -m 644 libmlt.def $(DESTDIR)$(libdir) ; \
++	elif [ "$(targetos)" = "Cygwin" ]; then \
++		install -d $(DESTDIR)$(bindir) ; \
++		install -m 755 $(TARGET) $(DESTDIR)$(bindir) ; \
++		install -m 644 libmlt.dll.a $(DESTDIR)$(libdir) ; \
+ 	else \
+ 		install -m 755 $(TARGET) $(DESTDIR)$(libdir) ; \
+ 		ln -sf $(TARGET) $(DESTDIR)$(libdir)/$(SONAME) ; \
+--- origsrc/mlt-0.7.2/src/mlt++/Makefile	2011-05-02 00:59:12.000000000 -0500
++++ src/mlt-0.7.2/src/mlt++/Makefile	2011-07-05 01:19:21.349174700 -0500
+@@ -12,6 +12,11 @@ NAME = libmlt++$(LIBSUF)
+ TARGET = libmlt++-$(soversion)$(LIBSUF)
+ CXXFLAGS += -DMLTPP_EXPORTS
+ LIBFLAGS += -Wl,--output-def,libmlt++.def
++else ifeq ($(targetos), Cygwin)
++NAME = cygmlt++$(LIBSUF)
++TARGET = cygmlt++-$(soversion)$(LIBSUF)
++CXXFLAGS += -DMLTPP_EXPORTS
++LIBFLAGS += -Wl,--out-implib,libmlt++.dll.a
+ else
+ NAME = libmlt++$(LIBSUF)
+ TARGET = $(NAME).$(version)
+@@ -54,7 +59,7 @@ all:		$(TARGET)
+ $(TARGET):	$(OBJS)
+ 	$(CXX) $(LIBFLAGS) -o $@ $(OBJS) $(LDFLAGS)
+ 	ln -sf $(TARGET) $(NAME)
+-	if [ "$(targetos)" != "MinGW" ]; then \
++	if [ "$(targetos)" != "MinGW" -a "$(targetos)" != "Cygwin" ]; then \
+ 		ln -sf $(TARGET) $(SONAME) ; \
+ 	fi
+ 
+@@ -72,6 +77,10 @@ install:
+ 		$(INSTALL) -m 755 $(TARGET) $(DESTDIR)$(prefix) ; \
+ 		$(INSTALL) -m 755 $(TARGET) $(DESTDIR)$(libdir)/libmlt++.dll ; \
+ 		$(INSTALL) -m 644 libmlt++.def $(DESTDIR)$(libdir) ; \
++	elif [ "$(targetos)" = "Cygwin" ]; then \
++		$(INSTALL) -d "$(DESTDIR)$(bindir)" ; \
++		$(INSTALL) -m 755 $(TARGET) $(DESTDIR)$(bindir) ; \
++		$(INSTALL) -m 644 libmlt++.dll.a $(DESTDIR)$(libdir) ; \
+ 	else \
+ 		$(INSTALL) -m 755 $(TARGET) $(DESTDIR)$(libdir) ; \
+ 		ln -sf $(TARGET) $(DESTDIR)$(libdir)/$(SONAME) ; \
+--- origsrc/mlt-0.7.2/src/mlt++/configure	2011-05-02 00:59:12.000000000 -0500
++++ src/mlt-0.7.2/src/mlt++/configure	2011-07-05 01:20:20.301677500 -0500
+@@ -15,7 +15,7 @@ case $targetos in
+ 		echo "CXXFLAGS+=-Wall $WARNINGS -fPIC -DPIC"
+ 		echo "LIBFLAGS=-shared"
+ 		;;
+-	MinGW)
++	MinGW|Cygwin)
+ 		echo LIBSUF=.dll
+ 		echo "CXXFLAGS+=-Wall $WARNINGS -DPIC"
+ 		echo "LIBFLAGS=-enable-auto-import -shared"
+--- origsrc/mlt-0.7.2/src/modules/kino/Makefile	2011-05-02 00:59:12.000000000 -0500
++++ src/mlt-0.7.2/src/modules/kino/Makefile	2011-07-05 01:21:30.080599200 -0500
+@@ -6,7 +6,7 @@ LDFLAGS += -L../../framework -lmlt -lpth
+ include ../../../config.mak
+ include config.mak
+ 
+-TARGET = ../libmltkino.so
++TARGET = ../libmltkino$(LIBSUF)
+ 
+ OBJS = factory.o producer_kino.o
+ CPPOBJS = kino_wrapper.o avi.o error.o filehandler.o riff.o
+--- origsrc/mlt-0.7.2/src/modules/qimage/configure	2011-05-02 00:59:12.000000000 -0500
++++ src/mlt-0.7.2/src/modules/qimage/configure	2011-07-05 01:21:13.622570500 -0500
+@@ -18,7 +18,7 @@ EOF
+ else
+ 	targetos=$(uname -s)
+ 	case $targetos in
+-	MINGW32*)
++	MINGW32*|CYGWIN*)
+ 		export LIBSUF=.dll
+ 		;;
+ 	Darwin)

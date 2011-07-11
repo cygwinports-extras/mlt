@@ -1,5 +1,5 @@
 category: Audio Video Perl
-requires: libmlt2 libmlt++3 libssp0 perl
+requires: libmlt4 libmlt++3 libssp0 perl
 external-source: mlt
 sdesc: "Multimedia framework for broadcasting (Perl bindings)"
 ldesc: "MLT is an open source multimedia framework, designed and 

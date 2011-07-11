@@ -1,5 +1,5 @@
 category: Audio Video Ruby
-requires: libmlt2 libmlt++3 ruby
+requires: libmlt4 libmlt++3 ruby
 external-source: mlt
 sdesc: "Multimedia framework for broadcasting (Ruby bindings)"
 ldesc: "MLT is an open source multimedia framework, designed and 

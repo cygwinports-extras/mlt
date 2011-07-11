@@ -1,5 +1,5 @@
 category: Audio Video Tcl
-requires: libmlt2 libmlt++3 tcl
+requires: libmlt4 libmlt++3 tcl
 external-source: mlt
 sdesc: "Multimedia framework for broadcasting (Tcl bindings)"
 ldesc: "MLT is an open source multimedia framework, designed and 

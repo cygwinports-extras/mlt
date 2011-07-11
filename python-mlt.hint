@@ -1,5 +1,5 @@
 category: Audio Video Python
-requires: libmlt2 libmlt++3 python
+requires: libmlt4 libmlt++3 python
 external-source: mlt
 sdesc: "Multimedia framework for broadcasting (Python bindings)"
 ldesc: "MLT is an open source multimedia framework, designed and 

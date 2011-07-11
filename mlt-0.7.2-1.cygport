@@ -6,15 +6,16 @@ SRC_URI="mirror://sourceforge/mlt/${P}.tar.gz"
 
 PATCH_URI="
 	0.5.4-mmx-cygwin.patch
-	0.5.4-targetos-cygwin.patch
-	0.5.10-swig-cygwin.patch
+	0.7.2-targetos-cygwin.patch
+	0.7.2-swig-cygwin.patch
 "
 
 # if/when API changes: versionize /usr/{lib,share}/mlt in framework/mlt_factory.c
-PKG_NAMES="${PN} libmlt2 libmlt-devel libmlt++3 libmlt++-devel"
+PKG_NAMES="${PN} libmlt4 libmlt-common libmlt-devel libmlt++3 libmlt++-devel"
 PKG_NAMES+=" java-mlt lua-mlt mono-mlt-sharp perl-mlt php-mlt python-mlt ruby-mlt tcl-mlt"
-mlt_CONTENTS="usr/bin/melt.exe usr/share/doc/"
-libmlt2_CONTENTS="usr/bin/cygmlt-2.dll usr/lib/mlt/ usr/share/mlt/"
+mlt_CONTENTS="usr/bin/melt.exe"
+libmlt4_CONTENTS="usr/bin/cygmlt-4.dll usr/lib/mlt/"
+libmlt_common_CONTENTS="usr/share/doc/ usr/share/mlt/"
 libmlt_devel_CONTENTS="usr/include/mlt/ usr/lib/libmlt.* usr/lib/pkgconfig/mlt-framework.pc"
 libmlt__3_CONTENTS="usr/bin/cygmlt++-3.dll"
 libmlt___devel_CONTENTS="usr/include/mlt++/ usr/lib/libmlt++.* usr/lib/pkgconfig/mlt++.pc"
@@ -30,7 +31,7 @@ tcl_mlt_CONTENTS="usr/lib/mlt0.0/"
 src_compile() {
 	lndirs
 	cd ${B}
-	./configure --prefix=/usr --enable-gpl --swig-languages=all
+	./configure --prefix=/usr --enable-gpl --swig-languages=all --disable-linsys
 	cygmake
 
 	cd ${B}/src/swig/java
@@ -39,6 +40,7 @@ src_compile() {
 	cygjar cf ../mlt.jar org/mltframework/*.class
 
 	cd ${B}/src/swig/tcl
+	export PATH="${B}/src/mlt++:${B}/src/framework:${PATH}"
 	echo pkg_mkIndex . | ${TCLSH}
 }
 
