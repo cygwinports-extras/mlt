@@ -1,5 +1,5 @@
 category: Audio Video
-requires: libmlt-common libavcodec52 libavdevice52 libavformat52 libavutil50 libdv4 libgcc1 libgdk_pixbuf2.0_0 libglib2.0_0 libgtk2.0_0 libiconv2 libpango1.0_0 libQtCore4 libQtGui4 libQtSvg4 libQtXml4 libquicktime0 libsamplerate0 libSDL1.2_0 libSDL_image1.2_0 libsox1 libswscale0 libvorbisfile3 libX11_6 libxml2
+requires: libmlt-common libavcodec52 libavdevice52 libavformat52 libavutil50 libdv4 libexif12 libgcc1 libgdk_pixbuf2.0_0 libglib2.0_0 libgtk2.0_0 libiconv2 libpango1.0_0 libQtCore4 libQtGui4 libQtSvg4 libQtXml4 libquicktime0 libsamplerate0 libSDL1.2_0 libSDL_image1.2_0 libsox1 libswscale0 libvorbisfile3 libX11_6 libxml2
 external-source: mlt
 sdesc: "Multimedia framework for broadcasting (C runtime)"
 ldesc: "MLT is an open source multimedia framework, designed and 
