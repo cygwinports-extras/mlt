@@ -1,11 +1,11 @@
---- origsrc/mlt-0.7.6/src/modules/videostab/stab/estimate.c	2011-10-31 12:26:04.000000000 -0500
-+++ src/mlt-0.7.6/src/modules/videostab/stab/estimate.c	2011-12-19 04:03:32.020723300 -0600
+--- origsrc/mlt-0.7.8/src/modules/videostab/stab/estimate.c
++++ src/mlt-0.7.8/src/modules/videostab/stab/estimate.c
 @@ -18,7 +18,7 @@
  #include <stdlib.h>
  #include <math.h>
  #include <string.h>
--#if !defined(__DARWIN__)
-+#if !defined(__DARWIN__) && !defined(__CYGWIN__)
+-#if !defined(__DARWIN__) && !defined(__FreeBSD__)
++#if !defined(__DARWIN__) && !defined(__FreeBSD__) && !defined(__CYGWIN__)
  #include <values.h>
  #endif
  
