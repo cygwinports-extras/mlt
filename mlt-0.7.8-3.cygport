@@ -1,6 +1,13 @@
 inherit java lua mono perl php python ruby tcl qt4
 
-DESCRIPTION="Multimedia framework designed for broadcasting"
+CATEGORY="Video"
+SUMMARY="Multimedia framework for broadcasting"
+DESCRIPTION="MLT is an open source multimedia framework, designed and developed
+for television broadcasting. It provides a toolkit for broadcasters, video
+editors, media players, transcoders, web streamers and many more types of
+applications. The functionality of the system is provided via an assortment
+of ready to use tools, XML authoring components, and an extensible plug-in
+based API."
 HOMEPAGE="http://www.mltframework.org/"
 SRC_URI="mirror://sourceforge/mlt/${P}.tar.gz"
 
@@ -15,18 +22,40 @@ PATCH_URI="
 PKG_NAMES="${PN} libmlt4 libmlt-common libmlt-devel libmlt++3 libmlt++-devel"
 PKG_NAMES+=" java-mlt lua-mlt mono-mlt-sharp perl-mlt php-mlt python-mlt ruby-mlt tcl-mlt"
 mlt_CONTENTS="usr/bin/melt.exe"
+libmlt4_REQUIRES="libmlt-common"
+libmlt4_SUMMARY="${SUMMARY} (C runtime)"
 libmlt4_CONTENTS="usr/bin/cygmlt-4.dll usr/lib/mlt/"
+libmlt_common_SUMMARY="${SUMMARY} (runtime data)"
 libmlt_common_CONTENTS="usr/share/doc/ usr/share/mlt/"
+libmlt_devel_SUMMARY="${SUMMARY} (C development)"
 libmlt_devel_CONTENTS="usr/include/mlt/ usr/lib/libmlt.* usr/lib/pkgconfig/mlt-framework.pc"
+libmlt__3_SUMMARY="${SUMMARY} (C++ runtime)"
 libmlt__3_CONTENTS="usr/bin/cygmlt++-3.dll"
+libmlt___devel_SUMMARY="${SUMMARY} (C++ development)"
 libmlt___devel_CONTENTS="usr/include/mlt++/ usr/lib/libmlt++.* usr/lib/pkgconfig/mlt++.pc"
+java_mlt_CATEGORY="Java"
+java_mlt_SUMMARY="${SUMMARY} (Java bindings)"
 java_mlt_CONTENTS="usr/bin/*java.dll ${JAVA_DIR#/} ${JAVADOC_DIR#/}"
+mono_mlt_sharp_CATEGORY="DotNET"
+mono_mlt_sharp_SUMMARY="${SUMMARY} (Mono bindings)"
 mono_mlt_sharp_CONTENTS="usr/bin/*sharp.dll usr/lib/mono/"
+lua_mlt_CATEGORY="Lua"
+lua_mlt_SUMMARY="${SUMMARY} (Lua bindings)"
 lua_mlt_CONTENTS=${LUA_LIBDIR#/}
+perl_mlt_CATEGORY="Perl"
+perl_mlt_SUMMARY="${SUMMARY} (Perl bindings)"
 perl_mlt_CONTENTS=${PERL_VENDORARCH#/}
+php_mlt_CATEGORY="PHP"
+php_mlt_SUMMARY="${SUMMARY} (PHP bindings)"
 php_mlt_CONTENTS="${PHP_INI_DIR#/} ${PHP_EXTENSION_DIR#/} ${PHP_PEAR_DIR#/}"
+python_mlt_CATEGORY="Python"
+python_mlt_SUMMARY="${SUMMARY} (Python bindings)"
 python_mlt_CONTENTS=${PYTHON_SITELIB#/}
-ruby_mlt_CONTENTS=${RUBY_SITELIB#/}
+ruby_mlt_CATEGORY="Ruby"
+ruby_mlt_SUMMARY="${SUMMARY} (Ruby bindings)"
+ruby_mlt_CONTENTS=${RUBY_VENDORLIB#/}
+tcl_mlt_CATEGORY="Tcl"
+tcl_mlt_SUMMARY="${SUMMARY} (Tcl bindings)"
 tcl_mlt_CONTENTS="usr/lib/mlt0.0/"
 
 src_compile() {
@@ -87,7 +116,7 @@ src_install() {
 	popd
 
 	pushd ruby
-	ruby_install
+	ruby_install RUBYARCHDIR=${D}${RUBY_VENDORARCH}
 	popd
 
 	pushd tcl
