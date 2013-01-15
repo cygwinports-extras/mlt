@@ -8,22 +8,22 @@
 +	swig -c++ -I../../mlt++ -I../.. -csharp -dllimport mltsharp -outdir src_swig -namespace Mlt mlt.i || exit $?
  
  	# Compile the wrapper
- 	g++ -fPIC -D_GNU_SOURCE -c -rdynamic -pthread -I../.. mlt_wrap.cxx || exit $?
+ 	g++ -fPIC -D_GNU_SOURCE ${CXXFLAGS} -c -rdynamic -pthread -I../.. mlt_wrap.cxx || exit $?
  	
  	# Create the module
--	g++ -shared mlt_wrap.o -L../../mlt++ -lmlt++ -o libmltsharp.so || exit $?
-+	g++ -shared mlt_wrap.o -L../../mlt++ -lmlt++ -L../../framework -lmlt -o cygmltsharp.dll || exit $?
+-	g++ ${CXXFLAGS} -shared mlt_wrap.o -L../../mlt++ -lmlt++ -o libmltsharp.so || exit $?
++	g++ ${CXXFLAGS} -shared mlt_wrap.o -L../../mlt++ -lmlt++ -L../../framework -lmlt -o cygmltsharp.dll || exit $?
  
  	# Compile the library assembly
  	mcs -out:mlt-sharp.dll -target:library src_swig/*.cs
 --- origsrc/mlt-0.5.10/src/swig/java/build	2010-09-14 01:00:09.000000000 -0500
 +++ src/mlt-0.5.10/src/swig/java/build	2010-11-02 06:58:46.391061100 -0500
 @@ -27,13 +27,13 @@ then
- 	g++ -fPIC -D_GNU_SOURCE -c -rdynamic -pthread -I../.. mlt_wrap.cxx $JAVA_INCLUDE || exit $?
+ 	g++ -fPIC -D_GNU_SOURCE ${CXXFLAGS} -c -rdynamic -pthread -I../.. mlt_wrap.cxx $JAVA_INCLUDE || exit $?
  	
  	# Create the module
--	g++ -shared mlt_wrap.o -L../../mlt++ -lmlt++ -o libmlt_java.so || exit $?
-+	g++ -shared mlt_wrap.o -L../../mlt++ -lmlt++ -L../../framework -lmlt -o cygmlt_java.dll || exit $?
+-	g++ ${CXXFLAGS} -shared mlt_wrap.o -L../../mlt++ -lmlt++ -o libmlt_java.so || exit $?
++	g++ ${CXXFLAGS} -shared mlt_wrap.o -L../../mlt++ -lmlt++ -L../../framework -lmlt -o cygmlt_java.dll || exit $?
  
  	# Compile the test
  	javac `find src_swig -name '*.java'` || exit $?
@@ -37,11 +37,11 @@
 --- origsrc/mlt-0.5.10/src/swig/lua/build	2010-09-14 01:00:09.000000000 -0500
 +++ src/mlt-0.5.10/src/swig/lua/build	2010-11-02 06:47:11.695588200 -0500
 @@ -19,7 +19,7 @@ then
- 	g++ -fPIC -DPIC -D_GNU_SOURCE -c -rdynamic -pthread -I../.. mlt_wrap.cxx || exit $?
+ 	g++ -fPIC -DPIC -D_GNU_SOURCE ${CXXFLAGS} -c -rdynamic -pthread -I../.. mlt_wrap.cxx || exit $?
  
  	# Create the module
--	g++ -shared mlt_wrap.o -L../../mlt++ -lmlt++ -o mlt.so || exit $?
-+	g++ -shared mlt_wrap.o -L../../mlt++ -lmlt++ -L../../framework -lmlt -llua -o mlt.dll || exit $?
+-	g++ ${CXXFLAGS} -shared mlt_wrap.o -L../../mlt++ -lmlt++ -o mlt.so || exit $?
++	g++ ${CXXFLAGS} -shared mlt_wrap.o -L../../mlt++ -lmlt++ -L../../framework -lmlt -llua -o mlt.dll || exit $?
  else
  	echo Lua not installed.
  	exit 1
@@ -49,7 +49,7 @@
 +++ src/mlt-0.5.10/src/swig/perl/Makefile.PL	2010-11-02 07:07:40.115399200 -0500
 @@ -9,7 +9,7 @@ WriteMakefile(
  	'NAME'    => 'mlt',
- 	'CC'      => '${CXX} -fPIC -I../..',
+ 	'CC'      => '${CXX} -fPIC ${CXXFLAGS} -I../..',
  	'OPTIMIZE' => '-O2 -g -pipe -Wp,-D_FORTIFY_SOURCE=2 -fexceptions',
 -	'LIBS'    => ['-L../../mlt++ -lmlt++'],
 +	'LIBS'    => ['-L../../mlt++ -lmlt++ -L../../framework -lmlt'],
@@ -61,9 +61,9 @@
 @@ -10,4 +10,4 @@ fi
  ln -sf ../mlt.i
  swig -c++ -I../../mlt++ -I../.. -php5 -noproxy mlt.i
- g++ -fPIC -DPIC -D_GNU_SOURCE -c -rdynamic -pthread -I../.. `php-config --includes` mlt_wrap.cpp
--g++ -shared mlt_wrap.o -L../../mlt++ -lmlt++ -o mlt.so || exit $?
-+g++ -shared mlt_wrap.o -L../../mlt++ -lmlt++ -L../../framework -lmlt -lphp5 -o mlt.dll || exit $?
+ g++ -fPIC -DPIC -D_GNU_SOURCE ${CXXFLAGS} -c -rdynamic -pthread -I../.. `php-config --includes` mlt_wrap.cpp
+-g++ ${CXXFLAGS} -shared mlt_wrap.o -L../../mlt++ -lmlt++ -o mlt.so || exit $?
++g++ ${CXXFLAGS} -shared mlt_wrap.o -L../../mlt++ -lmlt++ -L../../framework -lmlt -lphp5 -o mlt.dll || exit $?
 --- origsrc/mlt-0.5.10/src/swig/php/play.php	2010-09-14 01:00:09.000000000 -0500
 +++ src/mlt-0.5.10/src/swig/php/play.php	2010-11-02 07:44:29.033317400 -0500
 @@ -1,6 +1,6 @@
@@ -77,11 +77,11 @@
 --- origsrc/mlt-0.7.2/src/swig/python/build
 +++ src/mlt-0.7.2/src/swig/python/build
 @@ -24,7 +24,7 @@ then
- 	g++ -fPIC -D_GNU_SOURCE -c -rdynamic -pthread -I../.. -I$PYTHON_INCLUDE mlt_wrap.cxx || exit $?
+ 	g++ -fPIC -D_GNU_SOURCE ${CXXFLAGS} -c -I../.. -I$PYTHON_INCLUDE mlt_wrap.cxx || exit $?
  
  	# Create the module
--	g++ -shared mlt_wrap.o -L../../mlt++ -lmlt++ -L../../framework -lmlt $(python-config --ldflags) -o _mlt.so || exit $?
-+	g++ -shared mlt_wrap.o -L../../mlt++ -lmlt++ -L../../framework -lmlt $(python-config --ldflags) -o _mlt.dll || exit $?
+-	g++ ${CXXFLAGS} -shared mlt_wrap.o -L../../mlt++ -lmlt++ -L../../framework -lmlt $(python-config --ldflags) -o _mlt.so || exit $?
++	g++ ${CXXFLAGS} -shared mlt_wrap.o -L../../mlt++ -lmlt++ -L../../framework -lmlt $(python-config --ldflags) -o _mlt.dll || exit $?
  else
  	echo Python not installed.
  	exit 1
@@ -90,7 +90,7 @@
 @@ -7,6 +7,6 @@ end
  system( "ln -sf ../mlt.i" )
  system( "swig -c++ -ruby -I../../mlt++ -I../.. mlt.i" )
- $CFLAGS += " -I../.."
+ $CFLAGS += " -I../.. " + ENV['CXXFLAGS']
 -$LDFLAGS += " -L../../mlt++ -lmlt++"
 +$LDFLAGS += " -L../../mlt++ -lmlt++ -L../../framework -lmlt -lstdc++"
  create_makefile('mlt')
@@ -101,12 +101,12 @@
  	swig -c++ -I../../mlt++ -I../.. -tcl mlt.i || exit 1
  
  	# Compile the wrapper
--	g++ -fPIC -D_GNU_SOURCE -c -rdynamic -pthread -I../.. mlt_wrap.cxx || exit 1
-+	g++ -fPIC -DUSE_TCL_STUBS -D_GNU_SOURCE -c -rdynamic -pthread -I../.. mlt_wrap.cxx || exit 1
+-	g++ -fPIC -D_GNU_SOURCE ${CXXFLAGS} -c -rdynamic -pthread -I../.. mlt_wrap.cxx || exit 1
++	g++ -fPIC -DUSE_TCL_STUBS -D_GNU_SOURCE ${CXXFLAGS} -c -rdynamic -pthread -I../.. mlt_wrap.cxx || exit 1
  
  	# Create the module
--	g++ -shared mlt_wrap.o -L../../mlt++ -lmlt++ -o mlt.so || exit 1
-+	g++ -shared mlt_wrap.o -L../../mlt++ -lmlt++ -L../../framework -lmlt -ltclstub -o mlt.dll || exit 1
+-	g++ ${CXXFLAGS} -shared mlt_wrap.o -L../../mlt++ -lmlt++ -o mlt.so || exit 1
++	g++ ${CXXFLAGS} -shared mlt_wrap.o -L../../mlt++ -lmlt++ -L../../framework -lmlt -ltclstub -o mlt.dll || exit 1
  else
  	echo "Unable to locate tclsh."
  	exit 1

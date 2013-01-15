@@ -1,7 +1,7 @@
 inherit java lua mono perl php python ruby tcl qt4
 
 NAME="mlt"
-VERSION=0.8.2
+VERSION=0.8.6
 RELEASE=1
 CATEGORY="Video"
 SUMMARY="Multimedia framework for broadcasting"
