@@ -1,5 +1,5 @@
---- origsrc/mlt-0.7.8/src/modules/videostab/stab/estimate.c
-+++ src/mlt-0.7.8/src/modules/videostab/stab/estimate.c
+--- origsrc/mlt-0.8.8/src/modules/videostab/stab/estimate.c	2013-01-20 23:57:25.000000000 -0600
++++ src/mlt-0.8.8/src/modules/videostab/stab/estimate.c	2013-09-24 23:56:29.479198600 -0500
 @@ -18,7 +18,7 @@
  #include <stdlib.h>
  #include <math.h>
@@ -9,8 +9,8 @@
  #include <values.h>
  #endif
  
---- origsrc/mlt-0.7.6/src/modules/videostab/stab/klt/base.h	2011-10-31 12:26:04.000000000 -0500
-+++ src/mlt-0.7.6/src/modules/videostab/stab/klt/base.h	2011-12-19 03:56:14.660707700 -0600
+--- origsrc/mlt-0.8.8/src/modules/videostab/stab/klt/base.h	2013-01-20 23:57:25.000000000 -0600
++++ src/mlt-0.8.8/src/modules/videostab/stab/klt/base.h	2013-09-24 23:56:51.954484100 -0500
 @@ -13,6 +13,7 @@
  #define schar signed char
  #endif
@@ -23,7 +23,7 @@
  #ifndef ulong
  #define ulong unsigned long
  #endif
-+#endif
++#endif /* !__CYGWIN__ */
  
  #ifndef max
  #define max(a,b)	((a) > (b) ? (a) : (b))

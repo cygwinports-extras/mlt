@@ -2,7 +2,7 @@ inherit java lua mono perl php python ruby tcl qt4
 
 NAME="mlt"
 VERSION=0.8.8
-RELEASE=1
+RELEASE=2
 CATEGORY="Video"
 SUMMARY="Multimedia framework for broadcasting"
 DESCRIPTION="MLT is an open source multimedia framework, designed and developed
@@ -17,7 +17,7 @@ SRC_URI="mirror://sourceforge/mlt/${P}.tar.gz"
 PATCH_URI="
 	0.7.2-targetos-cygwin.patch
 	0.7.2-swig-cygwin.patch
-	0.7.6-videostab-cygwin.patch
+	0.8.8-videostab-cygwin.patch
 "
 
 # if/when API changes: versionize /usr/{lib,share}/mlt in framework/mlt_factory.c
