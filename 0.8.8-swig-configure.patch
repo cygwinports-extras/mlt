@@ -1,0 +1,11 @@
+--- origsrc/mlt-0.8.8/src/swig/configure	2013-10-14 22:03:16.090103900 -0500
++++ src/mlt-0.8.8/src/swig/configure	2013-10-14 22:11:26.302142400 -0500
+@@ -28,7 +28,7 @@ else
+ 				which swig > /dev/null 2>&1
+ 				[ $? != 0 ] && echo "Please install swig" && exit 1
+ 				[ "$languages" = "all" ] && languages="csharp java lua perl php python ruby tcl"
+-				echo SUBDIRS = $languages > config.mak
++				echo SUBDIRS = ${languages//,/ } > config.mak
+ 			;;
+ 		esac
+ 	done

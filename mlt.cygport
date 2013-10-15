@@ -1,4 +1,4 @@
-inherit java lua mono perl php python ruby tcl qt4
+inherit java lua ${ARCH_i686+mono} perl php python ruby tcl qt4
 
 NAME="mlt"
 VERSION=0.8.8
@@ -18,11 +18,15 @@ PATCH_URI="
 	0.7.2-targetos-cygwin.patch
 	0.7.2-swig-cygwin.patch
 	0.8.8-videostab-cygwin.patch
+	0.8.8-swig-configure.patch
 "
 
 # if/when API changes: versionize /usr/{lib,share}/mlt in framework/mlt_factory.c
 PKG_NAMES="${PN} libmlt5 libmlt-common libmlt-devel libmlt++3 libmlt++-devel"
-PKG_NAMES+=" java-mlt lua-mlt mono-mlt-sharp perl-mlt php-mlt python-mlt ruby-mlt tcl-mlt"
+PKG_NAMES+=" java-mlt javadoc-mlt lua-mlt perl-mlt php-mlt python-mlt ruby-mlt tcl-mlt"
+if defined ARCH_i686; then
+PKG_NAMES+=" mono-mlt-sharp"
+fi
 mlt_CONTENTS="usr/bin/melt.exe"
 libmlt5_REQUIRES="libmlt-common"
 libmlt5_SUMMARY="${SUMMARY} (C runtime)"
@@ -37,7 +41,10 @@ libmlt___devel_SUMMARY="${SUMMARY} (C++ development)"
 libmlt___devel_CONTENTS="usr/include/mlt++/ usr/lib/libmlt++.* usr/lib/pkgconfig/mlt++.pc"
 java_mlt_CATEGORY="Java"
 java_mlt_SUMMARY="${SUMMARY} (Java bindings)"
-java_mlt_CONTENTS="usr/bin/*java.dll ${JAVA_DIR#/} ${JAVADOC_DIR#/}"
+java_mlt_CONTENTS="usr/bin/*java.dll ${JAVA_DIR#/}"
+javadoc_mlt_CATEGORY="Doc"
+javadoc_mlt_SUMMARY="${SUMMARY} (Java bindings API docs)"
+javadoc_mlt_CONTENTS=${JAVADOC_DIR#/}
 mono_mlt_sharp_CATEGORY="DotNET"
 mono_mlt_sharp_SUMMARY="${SUMMARY} (Mono bindings)"
 mono_mlt_sharp_CONTENTS="usr/bin/*sharp.dll usr/lib/mono/"
@@ -63,7 +70,8 @@ tcl_mlt_CONTENTS="usr/lib/mlt0.0/"
 src_compile() {
 	lndirs
 	cd ${B}
-	./configure --prefix=/usr --enable-gpl --swig-languages=all --disable-linsys
+	./configure --prefix=/usr --enable-gpl --disable-linsys \
+		--swig-languages=${ARCH_i686+csharp,}java,lua,perl,php,python,ruby,tcl
 	cygmake
 
 	cd ${B}/src/swig/java
@@ -82,11 +90,14 @@ src_install() {
 
 	cd ${B}/src/swig
 
-	pushd csharp
-	dobin cygmltsharp.dll
-	insinto /usr/lib/mono/mlt-sharp
-	doins mlt-sharp.dll
-	popd
+	if inherited mono
+	then
+		pushd csharp
+		dobin cygmltsharp.dll
+		insinto /usr/lib/mono/mlt-sharp
+		doins mlt-sharp.dll
+		popd
+	fi
 
 	pushd java
 	dobin *.dll
@@ -101,7 +112,6 @@ src_install() {
 
 	pushd perl
 	cyginstall INSTALLDIRS=vendor
-	perl_postinst
 	popd
 
 	pushd php
