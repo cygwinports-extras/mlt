@@ -1,5 +1,5 @@
---- origsrc/mlt-0.5.10/src/swig/csharp/build	2010-09-14 01:00:09.000000000 -0500
-+++ src/mlt-0.5.10/src/swig/csharp/build	2010-11-02 06:46:19.170296600 -0500
+--- origsrc/mlt-0.9.2/src/swig/csharp/build	2014-06-29 15:23:17.000000000 -0500
++++ src/mlt-0.9.2/src/swig/csharp/build	2014-08-26 22:31:15.378570800 -0500
 @@ -14,13 +14,13 @@ then
  
  	# Invoke swig
@@ -16,8 +16,8 @@
  
  	# Compile the library assembly
  	mcs -out:mlt-sharp.dll -target:library src_swig/*.cs
---- origsrc/mlt-0.5.10/src/swig/java/build	2010-09-14 01:00:09.000000000 -0500
-+++ src/mlt-0.5.10/src/swig/java/build	2010-11-02 06:58:46.391061100 -0500
+--- origsrc/mlt-0.9.2/src/swig/java/build	2014-06-29 15:23:17.000000000 -0500
++++ src/mlt-0.9.2/src/swig/java/build	2014-08-26 22:31:15.382571300 -0500
 @@ -27,13 +27,13 @@ then
  	g++ -fPIC -D_GNU_SOURCE ${CXXFLAGS} -c -rdynamic -pthread -I../.. mlt_wrap.cxx $JAVA_INCLUDE || exit $?
  	
@@ -34,8 +34,8 @@
  else
  	echo "Java command not found"
  	exit 1
---- origsrc/mlt-0.5.10/src/swig/lua/build	2010-09-14 01:00:09.000000000 -0500
-+++ src/mlt-0.5.10/src/swig/lua/build	2010-11-02 06:47:11.695588200 -0500
+--- origsrc/mlt-0.9.2/src/swig/lua/build	2014-06-29 15:23:17.000000000 -0500
++++ src/mlt-0.9.2/src/swig/lua/build	2014-08-26 22:31:15.387071900 -0500
 @@ -19,7 +19,7 @@ then
  	g++ -fPIC -DPIC -D_GNU_SOURCE ${CXXFLAGS} -c -rdynamic -pthread -I../.. mlt_wrap.cxx || exit $?
  
@@ -45,8 +45,8 @@
  else
  	echo Lua not installed.
  	exit 1
---- origsrc/mlt-0.5.10/src/swig/perl/Makefile.PL	2010-09-14 01:00:09.000000000 -0500
-+++ src/mlt-0.5.10/src/swig/perl/Makefile.PL	2010-11-02 07:07:40.115399200 -0500
+--- origsrc/mlt-0.9.2/src/swig/perl/Makefile.PL	2014-06-29 15:23:17.000000000 -0500
++++ src/mlt-0.9.2/src/swig/perl/Makefile.PL	2014-08-26 22:31:15.390572300 -0500
 @@ -9,7 +9,7 @@ WriteMakefile(
  	'NAME'    => 'mlt',
  	'CC'      => '${CXX} -fPIC ${CXXFLAGS} -I../..',
@@ -56,16 +56,16 @@
  	'OBJECT'  => 'mlt_wrap.o',
  	'DESTDIR' => $ENV{'DESTDIR'},
  );
---- origsrc/mlt-0.5.10/src/swig/php/build	2010-09-14 01:00:09.000000000 -0500
-+++ src/mlt-0.5.10/src/swig/php/build	2010-11-02 06:47:38.075234200 -0500
+--- origsrc/mlt-0.9.2/src/swig/php/build	2014-06-29 15:23:17.000000000 -0500
++++ src/mlt-0.9.2/src/swig/php/build	2014-08-26 22:31:15.394572900 -0500
 @@ -10,4 +10,4 @@ fi
  ln -sf ../mlt.i
  swig -c++ -I../../mlt++ -I../.. -php5 -noproxy mlt.i
  g++ -fPIC -DPIC -D_GNU_SOURCE ${CXXFLAGS} -c -rdynamic -pthread -I../.. `php-config --includes` mlt_wrap.cpp
 -g++ ${CXXFLAGS} -shared mlt_wrap.o -L../../mlt++ -lmlt++ -o mlt.so || exit $?
 +g++ ${CXXFLAGS} -shared mlt_wrap.o -L../../mlt++ -lmlt++ -L../../framework -lmlt -lphp5 -o mlt.dll || exit $?
---- origsrc/mlt-0.5.10/src/swig/php/play.php	2010-09-14 01:00:09.000000000 -0500
-+++ src/mlt-0.5.10/src/swig/php/play.php	2010-11-02 07:44:29.033317400 -0500
+--- origsrc/mlt-0.9.2/src/swig/php/play.php	2014-06-29 15:23:17.000000000 -0500
++++ src/mlt-0.9.2/src/swig/php/play.php	2014-08-26 22:31:15.398073300 -0500
 @@ -1,6 +1,6 @@
  <?php
  $filename = $argv[1];
@@ -74,8 +74,8 @@
  mlt_factory_init(NULL);
  $profile = new_profile("dv_ntsc");
  $p = new_producer( $profile, $filename );
---- origsrc/mlt-0.7.2/src/swig/python/build
-+++ src/mlt-0.7.2/src/swig/python/build
+--- origsrc/mlt-0.9.2/src/swig/python/build	2014-06-29 15:23:17.000000000 -0500
++++ src/mlt-0.9.2/src/swig/python/build	2014-08-26 22:31:15.401573700 -0500
 @@ -24,7 +24,7 @@ then
  	g++ -fPIC -D_GNU_SOURCE ${CXXFLAGS} -c -I../.. -I$PYTHON_INCLUDE mlt_wrap.cxx || exit $?
  
@@ -85,18 +85,20 @@
  else
  	echo Python not installed.
  	exit 1
---- origsrc/mlt-0.5.10/src/swig/ruby/build	2010-09-14 01:00:09.000000000 -0500
-+++ src/mlt-0.5.10/src/swig/ruby/build	2010-11-02 06:49:32.267433300 -0500
-@@ -7,6 +7,6 @@ end
+--- origsrc/mlt-0.9.2/src/swig/ruby/build	2014-06-29 15:23:17.000000000 -0500
++++ src/mlt-0.9.2/src/swig/ruby/build	2014-08-26 22:31:15.404574100 -0500
+@@ -7,7 +7,7 @@
+ end
  system( "ln -sf ../mlt.i" )
  system( "swig -c++ -ruby -I../../mlt++ -I../.. mlt.i" )
- $CFLAGS += " -I../.. " + ENV['CXXFLAGS']
+-$CFLAGS += " -I../.. " + (ENV.has_key?('CXXFLAGS')? ENV['CXXFLAGS'] : '')
 -$LDFLAGS += " -L../../mlt++ -lmlt++"
++$INCFLAGS += " -I../.. " + (ENV.has_key?('CXXFLAGS')? ENV['CXXFLAGS'] : '')
 +$LDFLAGS += " -L../../mlt++ -lmlt++ -L../../framework -lmlt -lstdc++"
  create_makefile('mlt')
  system( "make" )
---- origsrc/mlt-0.5.10/src/swig/tcl/build	2010-09-14 01:00:09.000000000 -0500
-+++ src/mlt-0.5.10/src/swig/tcl/build	2010-11-02 07:37:17.375087300 -0500
+--- origsrc/mlt-0.9.2/src/swig/tcl/build	2014-06-29 15:23:17.000000000 -0500
++++ src/mlt-0.9.2/src/swig/tcl/build	2014-08-26 22:31:15.407074400 -0500
 @@ -16,10 +16,10 @@ then
  	swig -c++ -I../../mlt++ -I../.. -tcl mlt.i || exit 1
  
@@ -110,8 +112,8 @@
  else
  	echo "Unable to locate tclsh."
  	exit 1
---- origsrc/mlt-0.5.10/src/swig/tcl/play.tcl	2010-09-14 01:00:09.000000000 -0500
-+++ src/mlt-0.5.10/src/swig/tcl/play.tcl	2010-11-02 07:38:31.642544300 -0500
+--- origsrc/mlt-0.9.2/src/swig/tcl/play.tcl	2014-06-29 15:23:17.000000000 -0500
++++ src/mlt-0.9.2/src/swig/tcl/play.tcl	2014-08-26 22:31:15.409074700 -0500
 @@ -1,6 +1,6 @@
  #!/usr/bin/env tclsh
  

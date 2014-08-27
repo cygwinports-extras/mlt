@@ -1,8 +1,8 @@
-inherit java lua ${ARCH_i686+mono} perl php python ruby tcl qt4
+inherit lua perl php python ruby tcl qt4 # java mono
 
 NAME="mlt"
-VERSION=0.8.8
-RELEASE=3
+VERSION=0.9.2
+RELEASE=1
 CATEGORY="Video"
 SUMMARY="Multimedia framework for broadcasting"
 DESCRIPTION="MLT is an open source multimedia framework, designed and developed
@@ -13,27 +13,19 @@ of ready to use tools, XML authoring components, and an extensible plug-in
 based API."
 HOMEPAGE="http://www.mltframework.org/"
 SRC_URI="mirror://sourceforge/mlt/${P}.tar.gz"
-
 PATCH_URI="
-	0.7.2-targetos-cygwin.patch
-	0.7.2-swig-cygwin.patch
+	0.9.2-targetos-cygwin.patch
+	0.9.2-swig-cygwin.patch
 	0.8.8-videostab-cygwin.patch
 	0.8.8-swig-configure.patch
-	0.8.8-freetype25.patch
 "
 
-# if/when API changes: versionize /usr/{lib,share}/mlt in framework/mlt_factory.c
-PKG_NAMES="${PN} libmlt5 libmlt-common libmlt-devel libmlt++3 libmlt++-devel"
-PKG_NAMES+=" java-mlt javadoc-mlt lua-mlt perl-mlt php-mlt python-mlt ruby-mlt tcl-mlt"
-if defined ARCH_i686; then
-PKG_NAMES+=" mono-mlt-sharp"
-fi
-mlt_CONTENTS="usr/bin/melt.exe"
-libmlt5_REQUIRES="libmlt-common"
-libmlt5_SUMMARY="${SUMMARY} (C runtime)"
-libmlt5_CONTENTS="usr/bin/cygmlt-5.dll usr/lib/mlt/"
-libmlt_common_SUMMARY="${SUMMARY} (runtime data)"
-libmlt_common_CONTENTS="usr/share/doc/ usr/share/mlt/"
+PKG_NAMES="mlt libmlt6 libmlt-devel libmlt++3 libmlt++-devel"
+PKG_NAMES+=" lua-mlt perl-mlt php-mlt python-mlt ruby-mlt tcl-mlt"
+mlt_CONTENTS="usr/bin/melt.exe usr/share/doc/"
+libmlt6_OBSOLETES="libmlt-common"
+libmlt6_SUMMARY="${SUMMARY} (C runtime)"
+libmlt6_CONTENTS="usr/bin/cygmlt-6.dll usr/lib/mlt-6/ usr/share/mlt-6/"
 libmlt_devel_SUMMARY="${SUMMARY} (C development)"
 libmlt_devel_CONTENTS="usr/include/mlt/ usr/lib/libmlt.* usr/lib/pkgconfig/mlt-framework.pc"
 libmlt__3_SUMMARY="${SUMMARY} (C++ runtime)"
@@ -63,7 +55,7 @@ python_mlt_SUMMARY="${SUMMARY} (Python bindings)"
 python_mlt_CONTENTS=${PYTHON_SITELIB#/}
 ruby_mlt_CATEGORY="Ruby"
 ruby_mlt_SUMMARY="${SUMMARY} (Ruby bindings)"
-ruby_mlt_CONTENTS=${RUBY_VENDORLIB#/}
+ruby_mlt_CONTENTS=${RUBY_VENDORARCH#/}
 tcl_mlt_CATEGORY="Tcl"
 tcl_mlt_SUMMARY="${SUMMARY} (Tcl bindings)"
 tcl_mlt_CONTENTS="usr/lib/mlt0.0/"
@@ -72,13 +64,17 @@ src_compile() {
 	lndirs
 	cd ${B}
 	./configure --prefix=/usr --enable-gpl --disable-linsys \
-		--swig-languages=${ARCH_i686+csharp,}java,lua,perl,php,python,ruby,tcl
+		--enable-extra-versioning --rename-melt=melt \
+		--swig-languages=lua,perl,php,python,ruby,tcl
 	cygmake
 
-	cd ${B}/src/swig/java
-	cygjavadoc -d doc -sourcepath src_swig -subpackages org
-	cd ${B}/src/swig/java/src_swig
-	cygjar cf ../mlt.jar org/mltframework/*.class
+	if inherited java
+	then
+		cd ${B}/src/swig/java
+		cygjavadoc -d doc -sourcepath src_swig -subpackages org
+		cd ${B}/src/swig/java/src_swig
+		cygjar cf ../mlt.jar org/mltframework/*.class
+	fi
 
 	cd ${B}/src/swig/tcl
 	export PATH="${B}/src/mlt++:${B}/src/framework:${PATH}"
@@ -100,11 +96,14 @@ src_install() {
 		popd
 	fi
 
-	pushd java
-	dobin *.dll
-	dojar mlt.jar
-	dojavadoc doc
-	popd
+	if inherited java
+	then
+		pushd java
+		dobin *.dll
+		dojar mlt.jar
+		dojavadoc doc
+		popd
+	fi
 
 	pushd lua
 	exeinto ${LUA_LIBDIR}
