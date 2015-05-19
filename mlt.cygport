@@ -1,8 +1,8 @@
 inherit lua perl php python ruby tcl qt4 # java mono
 
 NAME="mlt"
-VERSION=0.9.2
-RELEASE=2
+VERSION=0.9.6
+RELEASE=1
 CATEGORY="Video"
 SUMMARY="Multimedia framework for broadcasting"
 DESCRIPTION="MLT is an open source multimedia framework, designed and developed
